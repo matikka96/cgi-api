@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>API test file</title>
+  </head>
+  <body>
+    <div>
+      <div>
+        <button onclick="specialistLoadAll()">load all specialists</button>
+        <button onclick="test()">test</button>
+      </div>
+      <div class="specialist">
+        <h4>Create new specialist:</h4>
+        <div>
+          <p>Name:</p>
+          <input id="specialist-name" type="text" />
+        </div>
+        <div>
+          <p>Role:</p>
+          <input id="specialist-role" type="text" />
+        </div>
+        <button onclick="specialistCreate()">add specialist</button>
+        <h4>Remove specialist by ID: </h4>
+        <div>
+          <input id="specialist-delete-id" placeholder="ID" type="text" />
+        </div>
+        <button onclick="specialistDelete()">delete specialist</button>
+      </div>
+      <div class="appointment">
+        <div>
+          <h4>Create new appointment:</h4>
+          <input id="appoi-start-time" placeholder="start-time" type="number">
+          <input id="appoi-end-time" placeholder="end-time" type="number">
+          <input id="appoi-status" placeholder="status" type="text">
+          <input id="appoi-visitor-name" placeholder="visitor-name" type="text">
+          <input id="appoi-specialist-name" placeholder="specialist-name" type="text">
+          <input id="appoi-notes" placeholder="notes" type="text">
+          <button onclick="appointmentCreate()">create appointment</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import Axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      function test() {
+        axios.get("/api").then(r => {
+          console.log(r.data);
+        });
+      }
+      function specialistCreate() {
+        axios
+          .post("/api/specialist-new", {
+            name: document.getElementById("specialist-name").value,
+            role: document.getElementById("specialist-role").value
+          })
+          .then(r => {
+            console.log(r.data);
+          });
+      }
+      function specialistDelete() {
+          axios
+            .post("/api/specialist-delete", {
+              id: document.getElementById("specialist-delete-id").value
+            })
+            .then(r => {
+              console.log(r.data);
+            });
+        }
+      function specialistLoadAll() {
+        axios.get("/api/specialist-load-all").then(r => {
+          console.log(r.data);
+        });
+      }
+      function appointmentCreate() {
+          axios.post("/api/appointment-new", {
+            startTime: document.getElementById('appoi-start-time').value,
+            endTime: document.getElementById('appoi-end-time').value,
+            status: document.getElementById('appoi-status').value,
+            visitorName: document.getElementById('appoi-visitor-name').value,
+            specialistName: document.getElementById('appoi-specialist-name').value,
+            notes: document.getElementById('appoi-notes').value
+          }).then(r => {
+            console.log(r.data);
+          });
+        }
+    </script>
+  </body>
+</html>
