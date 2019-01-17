@@ -44,9 +44,9 @@ router.post("/specialist-delete", function(req, res, next) {
 // Create appointment
 router.post("/appointment-new", function(req, res, next) {
   new Appointment({
-    startTime: req.body.startTime,
-    endTime: req.body.endTime,
-    status: req.body.status,
+    startTime: parseInt(req.body.startTime),
+    endTime: parseInt(req.body.endTime),
+    status: "vapaa",
     visitorName: req.body.visitorName,
     specialistName: req.body.specialistName,
     notes: req.body.notes
@@ -56,6 +56,22 @@ router.post("/appointment-new", function(req, res, next) {
       console.log(newAppointment);
       res.json({ message: "User appointment succesfully", appointment: newAppointment });
     });
+});
+
+router.get("/appointment/free", function(req, res, next) {
+  // let query = req.query.specialist ? { specialist: req.query.specialist } : {};
+  let query = {
+    startTime: { $lte: parseInt(req.query.from) },
+    endTime: { $gte: parseInt(req.query.to) }
+  }
+  Appointment.find(query, (err, r) => {
+    if (err) {
+      console.log(err);
+      res.json({message: "Could not find appointments"});
+    } else {
+      res.json(r);
+    }
+  });
 });
 
 module.exports = router;

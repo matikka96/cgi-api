@@ -23,22 +23,25 @@
           <input id="specialist-role" type="text" />
         </div>
         <button onclick="specialistCreate()">add specialist</button>
-        <h4>Remove specialist by ID: </h4>
-        <div>
-          <input id="specialist-delete-id" placeholder="ID" type="text" />
-        </div>
+        <h4>Remove specialist by ID:</h4>
+        <div><input id="specialist-delete-id" placeholder="ID" type="text" /></div>
         <button onclick="specialistDelete()">delete specialist</button>
       </div>
       <div class="appointment">
         <div>
           <h4>Create new appointment:</h4>
-          <input id="appoi-start-time" placeholder="start-time" type="number">
-          <input id="appoi-end-time" placeholder="end-time" type="number">
-          <input id="appoi-status" placeholder="status" type="text">
-          <input id="appoi-visitor-name" placeholder="visitor-name" type="text">
-          <input id="appoi-specialist-name" placeholder="specialist-name" type="text">
-          <input id="appoi-notes" placeholder="notes" type="text">
+          <input id="appoi-start-time" placeholder="start-time" type="number" />
+          <input id="appoi-end-time" placeholder="end-time" type="number" />
+          <input id="appoi-visitor-name" placeholder="visitor-name" type="text" />
+          <input id="appoi-specialist-name" placeholder="specialist-name" type="text" />
+          <input id="appoi-notes" placeholder="notes" type="text" />
           <button onclick="appointmentCreate()">create appointment</button>
+        </div>
+        <div>
+          <h4>Search for appointments:</h4>
+          <input id="appoi-load-from" placeholder="appoi-load-from" type="number" />
+          <input id="appoi-load-to" placeholder="appoi-load-to" type="number" />
+          <button onclick="appointmentLoad()">search appointment</button>
         </div>
       </div>
     </div>
@@ -62,31 +65,41 @@
           });
       }
       function specialistDelete() {
-          axios
-            .post("/api/specialist-delete", {
-              id: document.getElementById("specialist-delete-id").value
-            })
-            .then(r => {
-              console.log(r.data);
-            });
-        }
+        axios
+          .post("/api/specialist-delete", {
+            id: document.getElementById("specialist-delete-id").value
+          })
+          .then(r => {
+            console.log(r.data);
+          });
+      }
       function specialistLoadAll() {
         axios.get("/api/specialist-load-all").then(r => {
           console.log(r.data);
         });
       }
       function appointmentCreate() {
-          axios.post("/api/appointment-new", {
-            startTime: document.getElementById('appoi-start-time').value,
-            endTime: document.getElementById('appoi-end-time').value,
-            status: document.getElementById('appoi-status').value,
-            visitorName: document.getElementById('appoi-visitor-name').value,
-            specialistName: document.getElementById('appoi-specialist-name').value,
-            notes: document.getElementById('appoi-notes').value
-          }).then(r => {
+        axios
+          .post("/api/appointment-new", {
+            startTime: document.getElementById("appoi-start-time").value,
+            endTime: document.getElementById("appoi-end-time").value,
+            visitorName: document.getElementById("appoi-visitor-name").value,
+            specialistName: document.getElementById("appoi-specialist-name").value,
+            notes: document.getElementById("appoi-notes").value
+          })
+          .then(r => {
             console.log(r.data);
           });
-        }
+      }
+      function appointmentLoad() {
+        let from = document.getElementById("appoi-load-from").value;
+        let to = document.getElementById("appoi-load-to").value;
+        let params = `?from=${from}&to=${to}`;
+        
+        axios.get("/api/appointment/free" + params).then(r => {
+          console.log(r.data);
+        });
+      }
     </script>
   </body>
 </html>
