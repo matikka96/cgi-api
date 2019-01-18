@@ -59,15 +59,25 @@ router.post("/appointment-new", function(req, res, next) {
 });
 
 router.get("/appointment/free", function(req, res, next) {
-  // let query = req.query.specialist ? { specialist: req.query.specialist } : {};
-  let query = {
-    startTime: { $lte: parseInt(req.query.from) },
-    endTime: { $gte: parseInt(req.query.to) }
+  let query = {};
+  if (req.query.specialist) query.specialistName = req.query.specialist;
+  if (req.query.from) {
+    query.startTime = { $gte: parseInt(req.query.from) };
+  } else {
+    res.json({ message: "Start-time not specified" });
   }
+  if (req.query.to) query.endTime = { $lte: parseInt(req.query.to) };
+  console.log(query);
+  // let queryOld = {
+  //   specialistName: req.query.specialist ? req.query.specialist : {},
+  //   startTime: { $lte: parseInt(req.query.from) },
+  //   endTime: { $gte: parseInt(req.query.to) }
+  // };
+  // console.log(queryOld)
   Appointment.find(query, (err, r) => {
     if (err) {
       console.log(err);
-      res.json({message: "Could not find appointments"});
+      res.json({ message: "Something went wrong..." });
     } else {
       res.json(r);
     }

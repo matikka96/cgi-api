@@ -49,14 +49,15 @@
     <!-- Import Axios -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
+      const URL = "http://localhost:3001";
       function test() {
-        axios.get("/api").then(r => {
+        axios.get(URL+"/api").then(r => {
           console.log(r.data);
         });
       }
       function specialistCreate() {
         axios
-          .post("/api/specialist-new", {
+          .post(URL+"/api/specialist-new", {
             name: document.getElementById("specialist-name").value,
             role: document.getElementById("specialist-role").value
           })
@@ -66,7 +67,7 @@
       }
       function specialistDelete() {
         axios
-          .post("/api/specialist-delete", {
+          .post(URL+"/api/specialist-delete", {
             id: document.getElementById("specialist-delete-id").value
           })
           .then(r => {
@@ -74,13 +75,13 @@
           });
       }
       function specialistLoadAll() {
-        axios.get("/api/specialist-load-all").then(r => {
+        axios.get(URL+"/api/specialist-load-all").then(r => {
           console.log(r.data);
         });
       }
       function appointmentCreate() {
         axios
-          .post("/api/appointment-new", {
+          .post(URL+"/api/appointment-new", {
             startTime: document.getElementById("appoi-start-time").value,
             endTime: document.getElementById("appoi-end-time").value,
             visitorName: document.getElementById("appoi-visitor-name").value,
@@ -96,7 +97,7 @@
         let to = document.getElementById("appoi-load-to").value;
         let params = `?from=${from}&to=${to}`;
         
-        axios.get("/api/appointment/free" + params).then(r => {
+        axios.get(URL+"/api/appointment/free" + params).then(r => {
           console.log(r.data);
         });
       }
