@@ -9,7 +9,7 @@ router.get("/", function(req, res, next) {
 });
 
 // Create specialist
-router.post("/specialist-new", function(req, res, next) {
+router.post("/specialists", function(req, res, next) {
   Specialist.findOne({ name: req.body.name }).then(search => {
     if (search) {
       res.json({ message: `User with name ${req.body.name} already exist` });
@@ -68,12 +68,6 @@ router.get("/appointment/free", function(req, res, next) {
   }
   if (req.query.to) query.endTime = { $lte: parseInt(req.query.to) };
   console.log(query);
-  // let queryOld = {
-  //   specialistName: req.query.specialist ? req.query.specialist : {},
-  //   startTime: { $lte: parseInt(req.query.from) },
-  //   endTime: { $gte: parseInt(req.query.to) }
-  // };
-  // console.log(queryOld)
   Appointment.find(query, (err, r) => {
     if (err) {
       console.log(err);
