@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import M from "materialize-css";
 import axios from "axios";
 import keys from "../keys";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 class Book extends Component {
   state = {
@@ -9,50 +11,13 @@ class Book extends Component {
     selectedSpecialist: "all",
     appointments: [],
     fromDate: new Date(),
-    fromTimeHours: "",
-    fromTimeMinutes: "",
-    toDate: "",
-    toTimeHours: "",
-    toTimeMinutes: ""
-  }
+    toDate: null
+  };
   componentDidMount() {
     M.AutoInit();
-    this.initializePickers();
     console.log("Book – Mounted");
     this.getSpecialists();
   }
-
-  initializePickers = () => {
-    const fromDateElement = document.getElementById("from-date");
-    const fromTimeElement = document.getElementById("from-time");
-    const toDateElement = document.getElementById("to-date");
-    const toTimeElement = document.getElementById("to-time");
-    M.Datepicker.init(fromDateElement, {
-      onSelect: d => {
-        this.setState({ fromDate: d });
-      },
-      autoClose: true,
-      firstDay: 1,
-      minDate: this.state.fromDate
-    });
-    M.Timepicker.init(fromTimeElement, {
-      onSelect: (h, m) => this.setState({ fromTimeHours: h, fromTimeMinutes: m }),
-      autoClose: true,
-      twelveHour: false
-    });
-    M.Datepicker.init(toDateElement, {
-      onSelect: d => {
-        this.setState({ toDate: d });
-      },
-      autoClose: true,
-      firstDay: 1,
-      minDate: this.state.fromDate
-    });
-    M.Timepicker.init(toTimeElement, {
-      onSelect: (h, m) => this.setState({ toTimeHours: h, toTimeMinutes: m }),
-      autoClose: true
-    });
-  };
 
   handleSelectedSpecialist = e => {
     this.setState({ selectedSpecialist: e.target.value });
@@ -60,36 +25,21 @@ class Book extends Component {
 
   // Handles appointment search
   handleAppointmentQuery = () => {
-    const {
-      fromDate,
-      fromTimeHours,
-      fromTimeMinutes,
-      toDate,
-      toTimeHours,
-      toTimeMinutes,
-      selectedSpecialist
-    } = this.state;
-
+    const { selectedSpecialist, fromDate, toDate } = this.state;
     let query = "?";
     if (selectedSpecialist !== "all") {
       query += `specialist=${selectedSpecialist}&`;
     }
-    const start = new Date(fromDate);
-    start.setHours(fromTimeHours);
-    start.setMinutes(fromTimeMinutes);
-    console.log("Start: " + start);
-    query += `from=${start.getTime()}`;
-    if (toDate === "") {
+    console.log("Start: " + fromDate);
+    query += `from=${fromDate.getTime()}`;
+    if (toDate === null) {
       console.log("No TO-date selected");
       console.log(query);
       this.getAppointments(query);
     } else {
-      const end = new Date(toDate);
-      end.setHours(toTimeHours);
-      end.setMinutes(toTimeMinutes);
-      query += `&to=${end.getTime()}`;
-      console.log("End: " + end);
-      if (start < end) {
+      query += `&to=${toDate.getTime()}`;
+      console.log("End: " + toDate);
+      if (fromDate < toDate) {
         console.log(query);
         this.getAppointments(query);
       } else {
@@ -97,67 +47,96 @@ class Book extends Component {
       }
     }
   };
+
   getSpecialists = () => {
-    axios.get(keys.serverAddress+"/api/v1/specialist-load-all").then(r => {
+    axios.get(keys.serverAddress + "/api/v1/specialist-load-all").then(r => {
       this.setState({ specialists: r.data });
       console.log("Specialists loaded");
     });
   };
   getAppointments = q => {
-    axios.get(keys.serverAddress+`/api/v1/appointment/free${q}`).then(r => {
+    axios.get(keys.serverAddress + `/api/v1/appointment/free${q}`).then(r => {
       console.log(r.data);
       this.setState({ appointments: r.data });
     });
   };
 
-  render() { 
+  render() {
     return (
       <>
         {/* Create search query */}
         <div className="">
           <h3>Book appointment</h3>
           <label>Select specialist:</label>
-          <select className="browser-default" defaultValue="all" onChange={this.handleSelectedSpecialist}>
+          <select
+            className="browser-default"
+            defaultValue="all"
+            onChange={this.handleSelectedSpecialist}
+          >
             <option value="all">All specialists</option>
-            {this.state.specialists.map(s => <option key={s._id} value={s.name}>
-              {s.name}
-            </option>)}
+            {this.state.specialists.map(s => (
+              <option key={s._id} value={s.name}>
+                {s.name}
+              </option>
+            ))}
           </select>
         </div>
         <div className="row section">
           <div className="col s6">
-            <p><b>From:</b></p>
-            <input placeholder="Select date" type="text" id="from-date" className="datepicker" />
-            <input placeholder="Select time" type="text" id="from-time" className="timepicker" />
-            <button className="btn" onClick={this.handleAppointmentQuery}>
-              Search
-                </button>
+            <DatePicker
+              minDate={new Date()}
+              placeholderText="From"
+              selected={this.state.fromDate}
+              onChange={fromDate => this.setState({ fromDate })}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              dateFormat="MMMM d, yyyy h:mm aa"
+              timeCaption="time"
+            />
           </div>
           <div className="col s6">
-            <p><b>To:</b></p>
-            <input placeholder="Select date" type="text" id="to-date" className="datepicker" />
-            <input placeholder="Select time" type="text" id="to-time" className="timepicker" />
+            <DatePicker
+              minDate={new Date()}
+              placeholderText="To"
+              selected={this.state.toDate}
+              onChange={toDate => this.setState({ toDate })}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              dateFormat="MMMM d, yyyy h:mm aa"
+              timeCaption="time"
+            />
           </div>
+          <button className="btn" onClick={this.handleAppointmentQuery}>
+            Search
+          </button>
         </div>
 
         {/* Search result */}
-        <div style={this.state.appointments.length === 0 ? { display: "none" } : { display: "block" }}>
+        <div
+          style={this.state.appointments.length === 0 ? { display: "none" } : { display: "block" }}
+        >
           <table>
             <thead>
               <tr>
                 <th>Specialist</th>
+
                 <th>From</th>
                 <th>To</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {this.state.appointments.map(a => <tr key={a._id}>
-                <td>{a.specialistName}</td>
-                <td>{a.startTime}</td>
-                <td>{a.endTime}</td>
-                <td>{a.status}</td>
-              </tr>)}
+              {this.state.appointments.map(a => (
+                <tr key={a._id}>
+                  <td>{a.specialistName}</td>
+
+                  <td>{a.startTime}</td>
+                  <td>{a.endTime}</td>
+                  <td>{a.status}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -165,5 +144,5 @@ class Book extends Component {
     );
   }
 }
- 
+
 export default Book;

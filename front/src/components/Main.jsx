@@ -11,12 +11,12 @@ class Main extends Component {
           <div className="col s12">
             <ul className="tabs">
               <li className="tab col s3">
-                <a className="" href="#test1">
+              <a className="" href="#test1">
                   Book appointment
                 </a>
               </li>
               <li className="tab col s3">
-                <a className="active" href="#CreateAppoiTab">
+              <a className="active" href="#CreateAppoiTab">
                   Create appointment
                 </a>
               </li>
