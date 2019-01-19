@@ -6,7 +6,7 @@ class Main extends Component {
   state = {
     specialists: [],
     selectedSpecialist: "all",
-    appointmenrts: [],
+    appointments: [],
     fromDate: new Date(),
     fromTimeHours: "",
     fromTimeMinutes: "",
@@ -18,11 +18,9 @@ class Main extends Component {
     M.AutoInit();
     this.initializePickers();
     console.log("Main – Mounted");
-    axios.get("http://localhost:3001/api/specialist-load-all").then(r => {
-      this.setState({ specialists: r.data });
-      console.log("Specialists loaded");
-    });
+    this.getSpecialists();
   }
+
   initializePickers = () => {
     const fromDateElement = document.getElementById("from-date");
     const fromTimeElement = document.getElementById("from-time");
@@ -97,31 +95,38 @@ class Main extends Component {
       }
     }
   };
+  getSpecialists = () => {
+    axios.get("http://localhost:3001/api/specialist-load-all").then(r => {
+      this.setState({ specialists: r.data });
+      console.log("Specialists loaded");
+    });
+  };
   getAppointments = q => {
     axios.get(`http://localhost:3001/api/appointment/free${q}`).then(r => {
       console.log(r.data);
+      this.setState({ appointments: r.data });
     });
   };
 
   render() {
-    console.log(this.state.specialists);
     return <div>
+        {/* Navigation tabs */}
         <div>
-          <div className="">
-            <div className="col s12">
-              <ul className="tabs">
-                <li className="tab col s3">
-                  <a className="active" href="#test1">
-                    Book appointment
-                  </a>
-                </li>
-                <li className="tab col s3">
-                  <a href="#test2">Test 2</a>
-                </li>
-              </ul>
-            </div>
+          <div className="col s12">
+            <ul className="tabs">
+              <li className="tab col s3">
+                <a className="active" href="#test1">
+                  Book appointment
+                </a>
+              </li>
+              <li className="tab col s3">
+                <a href="#test2">Create appointment</a>
+              </li>
+            </ul>
           </div>
         </div>
+
+        {/* Create search query */}
         <div className="container">
           <div id="test1" className="col s12">
             <div className="">
@@ -134,9 +139,9 @@ class Main extends Component {
                   </option>)}
               </select>
             </div>
-            <div className="row">
+            <div className="row section">
               <div className="col s6">
-                <p>From: </p>
+                <p><b>From:</b></p>
                 <input placeholder="Select date" type="text" id="from-date" className="datepicker" />
                 <input placeholder="Select time" type="text" id="from-time" className="timepicker" />
                 <button className="btn" onClick={this.handleAppointmentQuery}>
@@ -144,17 +149,46 @@ class Main extends Component {
                 </button>
               </div>
               <div className="col s6">
-                <p>To: </p>
+                <p><b>To:</b></p>
                 <input placeholder="Select date" type="text" id="to-date" className="datepicker" />
                 <input placeholder="Select time" type="text" id="to-time" className="timepicker" />
               </div>
             </div>
-            <div className="row section">
-              <div>{/* <p>{this.state}</p> */}</div>
+
+            {/* Search result */}
+            <div style={this.state.appointments.length === 0 ? { display: "none" } : { display: "block" }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Specialist</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {this.state.appointments.map(a => <tr key={a._id}>
+                      <td>{a.specialistName}</td>
+                      <td>{a.startTime}</td>
+                      <td>{a.endTime}</td>
+                      <td>{a.status}</td>
+                    </tr>)}
+                </tbody>
+              </table>
             </div>
           </div>
           <div id="test2" className="col s12">
-            {this.state.specialists.map(s => <p key={s._id}>{s.name}</p>)}
+            <div>
+              <h3>Create appointment</h3>
+              <label>Select specialist:</label>
+              <select className="browser-default" defaultValue="all" onChange={this.handleSelectedSpecialist}>
+                <option value="all">All specialists</option>
+                {this.state.specialists.map(s => <option key={s._id} value={s.name}>
+                    {s.name}
+                  </option>)}
+              </select>
+            </div>
           </div>
         </div>
       </div>;
