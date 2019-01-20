@@ -22,8 +22,7 @@ class AddSpecialist extends Component {
     axios
       .post(keys.serverAddress + "/api/v1/specialists", specialist)
       .then(r => {
-        console.log(r.data.message);
-        M.toast({ html: r.data.message })
+        M.toast({ html: r.data.message });
       })
       .then(() => {
         document.getElementById("specialist-name").value = "";

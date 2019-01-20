@@ -5,18 +5,26 @@ import AddSpecialist from "./AddSpecialist";
 
 class Main extends Component {
   render() {
-    return <div>
+    return (
+      <div>
+        <nav>
+          <div className="nav-wrapper">
+            <a href="/" className="brand-logo center">
+              CGI api challenge
+            </a>
+          </div>
+        </nav>
         {/* Navigation tabs */}
         <div>
           <div className="col s12">
-            <ul className="tabs">
+            <ul className="tabs center">
               <li className="tab col s3">
-              <a className="" href="#test1">
+                <a className="" href="#BookAppoi">
                   Book appointment
                 </a>
               </li>
               <li className="tab col s3">
-              <a className="active" href="#CreateAppoiTab">
+                <a className="" href="#CreateAppoiTab">
                   Create appointment
                 </a>
               </li>
@@ -30,7 +38,7 @@ class Main extends Component {
         </div>
 
         <div className="container">
-          <div id="test1" className="col s12">
+          <div id="BookAppoi" className="col s12">
             <BookAppointment />
           </div>
           <div id="CreateAppoiTab" className="col s12">
@@ -40,7 +48,8 @@ class Main extends Component {
             <AddSpecialist />
           </div>
         </div>
-      </div>;
+      </div>
+    );
   }
 }
 

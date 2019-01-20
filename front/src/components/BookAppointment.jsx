@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import M from "materialize-css";
 import axios from "axios";
+import dateFormat from "dateformat";
 import keys from "../keys";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -30,20 +31,15 @@ class Book extends Component {
     if (selectedSpecialist !== "all") {
       query += `specialist=${selectedSpecialist}&`;
     }
-    console.log("Start: " + fromDate);
     query += `from=${fromDate.getTime()}`;
     if (toDate === null) {
-      console.log("No TO-date selected");
-      console.log(query);
       this.getAppointments(query);
     } else {
       query += `&to=${toDate.getTime()}`;
-      console.log("End: " + toDate);
       if (fromDate < toDate) {
-        console.log(query);
         this.getAppointments(query);
       } else {
-        console.log("FROM-date must be nefore TO-date");
+        console.log("FROM-date must be before TO-date");
       }
     }
   };
@@ -51,20 +47,22 @@ class Book extends Component {
   getSpecialists = () => {
     axios.get(keys.serverAddress + "/api/v1/specialist-load-all").then(r => {
       this.setState({ specialists: r.data });
-      console.log("Specialists loaded");
+      console.log("Book appointment – Specialists loaded");
     });
   };
   getAppointments = q => {
     axios.get(keys.serverAddress + `/api/v1/appointment/free${q}`).then(r => {
-      console.log(r.data);
       this.setState({ appointments: r.data });
     });
+  };
+  handleDateFormat = d => {
+    const date = new Date(d);
+    return dateFormat(date, "dd/mm/yyyy");
   };
 
   render() {
     return (
       <>
-        {/* Create search query */}
         <div className="">
           <h3>Book appointment</h3>
           <label>Select specialist:</label>
@@ -83,6 +81,7 @@ class Book extends Component {
         </div>
         <div className="row section">
           <div className="col s6">
+            <label>Search from</label>
             <DatePicker
               minDate={new Date()}
               placeholderText="From"
@@ -90,27 +89,30 @@ class Book extends Component {
               onChange={fromDate => this.setState({ fromDate })}
               showTimeSelect
               timeFormat="HH:mm"
-              timeIntervals={15}
+              timeIntervals={20}
               dateFormat="MMMM d, yyyy h:mm aa"
               timeCaption="time"
             />
           </div>
           <div className="col s6">
+            <label>To</label>
             <DatePicker
-              minDate={new Date()}
+              minDate={this.state.fromDate}
               placeholderText="To"
               selected={this.state.toDate}
               onChange={toDate => this.setState({ toDate })}
               showTimeSelect
               timeFormat="HH:mm"
-              timeIntervals={15}
+              timeIntervals={20}
               dateFormat="MMMM d, yyyy h:mm aa"
               timeCaption="time"
             />
           </div>
-          <button className="btn" onClick={this.handleAppointmentQuery}>
-            Search
-          </button>
+          <div className="col">
+            <button className="btn right" onClick={this.handleAppointmentQuery}>
+              Search
+            </button>
+          </div>
         </div>
 
         {/* Search result */}
@@ -121,7 +123,7 @@ class Book extends Component {
             <thead>
               <tr>
                 <th>Specialist</th>
-
+                <th>Date</th>
                 <th>From</th>
                 <th>To</th>
                 <th>Status</th>
@@ -131,10 +133,11 @@ class Book extends Component {
               {this.state.appointments.map(a => (
                 <tr key={a._id}>
                   <td>{a.specialistName}</td>
-
-                  <td>{a.startTime}</td>
-                  <td>{a.endTime}</td>
+                  <td>{dateFormat(new Date(a.startTime), "dd/mm/yyyy")}</td>
+                  <td>{dateFormat(new Date(a.startTime), "HH:MM")}</td>
+                  <td>{dateFormat(new Date(a.endTime), "HH:MM")}</td>
                   <td>{a.status}</td>
+                  {/* <td>{a.status}</td> */}
                 </tr>
               ))}
             </tbody>

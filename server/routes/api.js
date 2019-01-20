@@ -42,19 +42,25 @@ router.post("/specialist-delete", function(req, res, next) {
 });
 
 // Create appointment
-router.post("/appointment-new", function(req, res, next) {
-  new Appointment({
-    startTime: parseInt(req.body.startTime),
-    endTime: parseInt(req.body.endTime),
-    status: "vapaa",
-    visitorName: req.body.visitorName,
-    specialistName: req.body.specialistName,
-    notes: req.body.notes
-  })
-    .save()
-    .then(newAppointment => {
-      console.log(newAppointment);
-      res.json({ message: "User appointment succesfully", appointment: newAppointment });
+router.post("/timeslots", function(req, res, next) {
+  req.body.appointments
+    .map(a => {
+      new Appointment({
+        startTime: parseInt(a.startTime),
+        endTime: parseInt(a.endTime),
+        status: "vapaa",
+        visitorName: a.visitorName,
+        specialistName: a.specialistName,
+        notes: a.notes
+      })
+        .save()
+        .then(newAppointment => {
+          console.log(newAppointment);
+        });
+    })
+    .then(r => {
+      console.log("R: " + r);
+      res.json({ message: "Appointments created", Result: r });
     });
 });
 
@@ -68,6 +74,29 @@ router.get("/appointment/free", function(req, res, next) {
   }
   if (req.query.to) query.endTime = { $lte: parseInt(req.query.to) };
   console.log(query);
+  Appointment.find(query, (err, r) => {
+    if (err) {
+      console.log(err);
+      res.json({ message: "Something went wrong..." });
+    } else {
+      res.json(r);
+    }
+  });
+});
+
+router.get("/appointment/available", function(req, res, next) {
+  const { specialist, from, to } = req.query;
+  if (specialist === null || from === null || to === null) {
+    res.json({ message: "Not all properties provided" });
+  }
+  console.log(`specialist: ${specialist} + from: ${from} + to: ${to}`);
+  let query = {
+    specialistName: specialist,
+    $or: [
+      { $and: [{ startTime: { $lte: from } }, { endTime: { $gte: from } }] },
+      { $and: [{ startTime: { $lte: to } }, { endTime: { $gte: to } }] }
+    ]
+  };
   Appointment.find(query, (err, r) => {
     if (err) {
       console.log(err);
