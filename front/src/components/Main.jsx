@@ -6,8 +6,8 @@ import AllAppointments from "./AllAppointments";
 
 class Main extends Component {
   render() {
-    return <div>
-
+    return (
+      <div>
         {/* Navbar */}
         <nav>
           <div className="nav-wrapper">
@@ -22,12 +22,12 @@ class Main extends Component {
           <div className="col s12">
             <ul className="tabs center">
               <li className="tab col">
-                <a className="active" href="#AllAppoi">
+                <a className="" href="#AllAppoi">
                   All appointments
                 </a>
               </li>
               <li className="tab col">
-                <a className="" href="#BookAppoi">
+                <a className="active" href="#BookAppoi">
                   Book appointment
                 </a>
               </li>
@@ -60,7 +60,8 @@ class Main extends Component {
             <AddSpecialist />
           </div>
         </div>
-      </div>;
+      </div>
+    );
   }
 }
 

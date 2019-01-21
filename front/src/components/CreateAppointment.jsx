@@ -105,7 +105,7 @@ class CreateAppointment extends Component {
         <div className="row">
           <div className="col s12 m6">
             <DatePicker
-              minDate={this.state.fromDate}
+              minDate={new Date()}
               placeholderText="Start time"
               selected={this.state.fromDate}
               onChange={fromDate => this.setState({ fromDate })}

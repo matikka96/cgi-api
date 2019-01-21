@@ -47,7 +47,8 @@ class AddSpecialist extends Component {
           specialistName: "",
           specialistRole: ""
         });
-      }).then(() => {
+      })
+      .then(() => {
         this.getSpecialists();
       });
   };
@@ -90,11 +91,6 @@ class AddSpecialist extends Component {
             </div>
           </div>
           <h3>All specialists</h3>
-          <div className="col s12">
-            <button className="btn green darken-4" onClick={this.getAllAppointments}>
-              <i className="material-icons">refresh</i>
-            </button>
-          </div>
           <table>
             <thead>
               <tr>
