@@ -4,9 +4,29 @@ API challenge from CGI for Future Talents
 
 Purpose of this challenge was to create MVP API for medical client appointment system.
 
+## Setup
+
+This project is separated on two main folders: `front` and `server`.
+
+As the name suggests `server` folder contains all the server related files. Run it with command:
+
+```
+ node server.js
+```
+
+Access server from the port **3001**
+
+Respectively React based front-end is running from the folder `front`. Run it with command:
+
+```
+npm start
+```
+
+Access front-end from the port **3000**
+
 ## API
 
-API has been built using *nodejs* and *expressjs*. MongoDB was used as a database.
+API has been built using **nodejs** and **expressjs**. MongoDB was used as a database.
 
 ### Adding specialist
 
@@ -36,7 +56,7 @@ API has been built using *nodejs* and *expressjs*. MongoDB was used as a databas
 - Type: GET
 - Parameters: {specialist: String, from: String, to: String}
 
-### Appointment boooking
+### Appointment booking
 
 > /api/v1/timeslots/t
 
@@ -68,4 +88,43 @@ There are currently 3 tabs:
 
 ### Book appointment
 
+![Book appointment](https://github.com/matikka96/cgi-api/blob/master/screenshots/book_a.png?raw=true)
 
+First create search query:
+1. Select specialist (OPTIONAL)
+2. Select from-date
+3. Select to-date (OPTIONAL)
+4. Press "Search" button
+
+Result will then appear in the table. To book appointment:
+1. Define visitors name
+2. Press green "Book" button
+
+### Create appointment
+
+![Create appointment](https://github.com/matikka96/cgi-api/blob/master/screenshots/create_a.png?raw=true)
+
+User can create multiple appointments by filling the following information:
+* Select specialist
+* Start time
+* End time
+* Notes (OPTIONAL)
+
+Then by pressing the yellow "Add to queue" button, appointment appears in the table below. Above process can be repeated.
+When ready all the above appointments can be created at once by pressing green "Create" button.
+
+### Add Specialist
+
+![Add Specialist](https://github.com/matikka96/cgi-api/blob/master/screenshots/add_s.png?raw=true)
+
+In order to add specialist two text fields must be filled:
+* Name
+* Role
+
+List of all existing specialist will be seen below under "All specialists" heading.
+
+### All appointments [EXTRA]
+
+![All appointments](https://github.com/matikka96/cgi-api/blob/master/screenshots/all_a.png?raw=true)
+
+In this tab, user can view all appointments from the database. This was originally for debugging use only.
