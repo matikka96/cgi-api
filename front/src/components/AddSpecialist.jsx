@@ -11,9 +11,11 @@ class AddSpecialist extends Component {
   };
 
   componentDidMount() {
+    // Loads specialist on startup
     this.getSpecialists();
   }
 
+  // Function for loading of specialists
   getSpecialists = () => {
     axios.get(keys.serverAddress + "/api/v1/specialist-load-all").then(r => {
       this.setState({ allSpecialists: r.data });
@@ -21,6 +23,7 @@ class AddSpecialist extends Component {
     });
   };
 
+  // Helper function for state editing
   handleSpecialistInfo = e => {
     this.setState({ [e.target.name]: e.target.value });
   };

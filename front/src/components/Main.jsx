@@ -7,6 +7,8 @@ import AllAppointments from "./AllAppointments";
 class Main extends Component {
   render() {
     return <div>
+
+        {/* Navbar */}
         <nav>
           <div className="nav-wrapper">
             <a href="/" className="brand-logo center">
@@ -14,6 +16,7 @@ class Main extends Component {
             </a>
           </div>
         </nav>
+
         {/* Navigation tabs */}
         <div>
           <div className="col s12">
@@ -42,6 +45,7 @@ class Main extends Component {
           </div>
         </div>
 
+        {/* Content */}
         <div className="container">
           <div id="AllAppoi" className="col s12">
             <AllAppointments />

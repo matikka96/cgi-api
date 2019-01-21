@@ -3,11 +3,6 @@ var router = express.Router();
 const Specialist = require("../models/specialist");
 const Appointment = require("../models/appointment");
 
-/* GET home page. */
-router.get("/", function(req, res, next) {
-  res.send("api");
-});
-
 // Create specialist
 router.post("/specialists", function(req, res, next) {
   Specialist.findOne({ name: req.body.name }).then(search => {
@@ -30,16 +25,16 @@ router.get("/specialist-load-all", function(req, res, next) {
 });
 
 // Delete specialist by id
-router.post("/specialist-delete", function(req, res, next) {
-  Specialist.findByIdAndDelete(req.body.id, (err, search) => {
-    if (err) {
-      console.log(err);
-      res.json({ message: "User not found" });
-    } else {
-      res.json({ message: "User deleted successfully" });
-    }
-  });
-});
+// router.post("/specialist-delete", function(req, res, next) {
+//   Specialist.findByIdAndDelete(req.body.id, (err, search) => {
+//     if (err) {
+//       console.log(err);
+//       res.json({ message: "User not found" });
+//     } else {
+//       res.json({ message: "User deleted successfully" });
+//     }
+//   });
+// });
 
 // Create appointment
 router.post("/timeslots", function(req, res, next) {
@@ -60,7 +55,7 @@ router.post("/timeslots", function(req, res, next) {
   res.json({ message: "Appointments created" });
 });
 
-// Appointment booking
+// Appointment booking based on parameters
 router.post("/timeslots/t", function(req, res) {
   console.log(req.body);
   Appointment.findByIdAndUpdate(
@@ -78,7 +73,8 @@ router.post("/timeslots/t", function(req, res) {
   );
 });
 
-// Search for free appointments
+// Search for free appointments based on parameters
+// Returns array of found appointments
 router.get("/appointment/free", function(req, res, next) {
   let query = {};
   if (req.query.specialist) query.specialistName = req.query.specialist;
@@ -100,8 +96,8 @@ router.get("/appointment/free", function(req, res, next) {
   });
 });
 
-// Search for all appointments
-router.get("/appointment/all", function (req, res, next) {
+// Search for all appointments, returns appointments
+router.get("/appointment/all", function(req, res, next) {
   let query = {};
   if (req.query.specialist) query.specialistName = req.query.specialist;
   if (req.query.from) {
@@ -121,6 +117,7 @@ router.get("/appointment/all", function (req, res, next) {
   });
 });
 
+// Check if timespan is avalable, returns array of appointments that matches query
 router.get("/appointment/available", function(req, res, next) {
   const { specialist, from, to } = req.query;
   if (specialist === null || from === null || to === null) {

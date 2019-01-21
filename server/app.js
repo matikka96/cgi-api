@@ -7,8 +7,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var apiRouter = require('./routes/api');
-var usersRouter = require('./routes/users');
-
 var app = express();
 
 // Connect to mongo DB
@@ -35,7 +33,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // app.use('/', apiRouter);
 app.use("/api/v1", apiRouter);
-app.use('/users', usersRouter);
 
 // error handler
 app.use(function(err, req, res, next) {
@@ -46,11 +43,6 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
-
-app.get("/", (req, res) => {
-  // res.sendFile(__dirname + '/test.html');
-  res.sendFile(__dirname + "/test.html");
 });
 
 app.listen(3001, () => {

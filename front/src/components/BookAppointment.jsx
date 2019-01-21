@@ -15,12 +15,14 @@ class Book extends Component {
     fromDate: new Date(),
     toDate: null
   };
+
+  // Loads specialist on star-up
   componentDidMount() {
     M.AutoInit();
-    console.log("Book – Mounted");
     this.getSpecialists();
   }
 
+  // Helper function for state editing
   handleSetState = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -45,18 +47,22 @@ class Book extends Component {
     }
   };
 
+  // Loads all specialists
   getSpecialists = () => {
     axios.get(keys.serverAddress + "/api/v1/specialist-load-all").then(r => {
       this.setState({ specialists: r.data });
       console.log("Book appointment – Specialists loaded");
     });
   };
+
+  // Loads appointments
   getAppointments = q => {
     axios.get(keys.serverAddress + `/api/v1/appointment/free${q}`).then(r => {
       this.setState({ appointments: r.data });
     });
   };
 
+  // API-request fot bookins appointment
   handleBooking = a => {
     if (this.state.visitorName === "") {
       M.toast({ html: "Define visitors name please" });

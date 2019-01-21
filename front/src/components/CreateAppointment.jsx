@@ -18,10 +18,10 @@ class CreateAppointment extends Component {
 
   componentDidMount() {
     M.AutoInit();
-    console.log("CreateAppointment – Mounted");
     this.getSpecialists();
   }
 
+  // Loads specialists to state
   getSpecialists = () => {
     axios.get(keys.serverAddress + "/api/v1/specialist-load-all").then(r => {
       this.setState({ specialists: r.data });
@@ -29,10 +29,12 @@ class CreateAppointment extends Component {
     });
   };
 
+  // Helper function fot state modifications
   handleSetState = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
+  // Query for API request is created here
   handleQuery = () => {
     const { selectedSpecialist, fromDate, toDate } = this.state;
     if (selectedSpecialist === null || fromDate === null || toDate === null) {
@@ -43,6 +45,7 @@ class CreateAppointment extends Component {
     }
   };
 
+  // API-request that verifies availability of selected timespan
   checkAvailability = q => {
     axios.get(keys.serverAddress + `/api/v1/appointment/available${q}`).then(r => {
       console.log(r.data);
@@ -61,6 +64,7 @@ class CreateAppointment extends Component {
     });
   };
 
+  // API-request for actual creation of the appointment
   handleCreateAppointments = () => {
     axios
       .post(keys.serverAddress + "/api/v1/timeslots", {
