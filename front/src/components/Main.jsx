@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import BookAppointment from "./BookAppointment";
 import CreateAppointment from "./CreateAppointment";
 import AddSpecialist from "./AddSpecialist";
+import AllAppointments from "./AllAppointments";
 
 class Main extends Component {
   render() {
-    return (
-      <div>
+    return <div>
         <nav>
           <div className="nav-wrapper">
             <a href="/" className="brand-logo center">
@@ -18,17 +18,22 @@ class Main extends Component {
         <div>
           <div className="col s12">
             <ul className="tabs center">
-              <li className="tab col s3">
+              <li className="tab col">
+                <a className="active" href="#AllAppoi">
+                  All appointments
+                </a>
+              </li>
+              <li className="tab col">
                 <a className="" href="#BookAppoi">
                   Book appointment
                 </a>
               </li>
-              <li className="tab col s3">
+              <li className="tab col">
                 <a className="" href="#CreateAppoiTab">
                   Create appointment
                 </a>
               </li>
-              <li className="tab col s3">
+              <li className="tab col">
                 <a className="" href="#addSpecialistTab">
                   Add specialist
                 </a>
@@ -38,6 +43,9 @@ class Main extends Component {
         </div>
 
         <div className="container">
+          <div id="AllAppoi" className="col s12">
+            <AllAppointments />
+          </div>
           <div id="BookAppoi" className="col s12">
             <BookAppointment />
           </div>
@@ -48,8 +56,7 @@ class Main extends Component {
             <AddSpecialist />
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
 }
 

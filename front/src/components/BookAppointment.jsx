@@ -10,6 +10,7 @@ class Book extends Component {
   state = {
     specialists: [],
     selectedSpecialist: "all",
+    visitorName: "",
     appointments: [],
     fromDate: new Date(),
     toDate: null
@@ -20,8 +21,8 @@ class Book extends Component {
     this.getSpecialists();
   }
 
-  handleSelectedSpecialist = e => {
-    this.setState({ selectedSpecialist: e.target.value });
+  handleSetState = e => {
+    this.setState({ [e.target.name]: e.target.value });
   };
 
   // Handles appointment search
@@ -55,29 +56,50 @@ class Book extends Component {
       this.setState({ appointments: r.data });
     });
   };
-  handleDateFormat = d => {
-    const date = new Date(d);
-    return dateFormat(date, "dd/mm/yyyy");
+
+  handleBooking = a => {
+    if (this.state.visitorName === "") {
+      M.toast({ html: "Define visitors name please" });
+    } else {
+      const parameters = {
+        id: a._id,
+        newStatus: "varattu",
+        visitorName: this.state.visitorName
+      };
+      axios
+        .post(keys.serverAddress + "/api/v1/timeslots/t", parameters)
+        .then(r => {
+          console.log(r.data);
+        })
+        .then(() => {
+          this.handleAppointmentQuery();
+        });
+    }
   };
 
   render() {
     return (
       <>
-        <div className="">
-          <h3>Book appointment</h3>
-          <label>Select specialist:</label>
-          <select
-            className="browser-default"
-            defaultValue="all"
-            onChange={this.handleSelectedSpecialist}
-          >
-            <option value="all">All specialists</option>
-            {this.state.specialists.map(s => (
-              <option key={s._id} value={s.name}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+        <div className="row">
+          <div className="col s12">
+            <h3>Book appointment</h3>
+          </div>
+          <div className="col s12">
+            <label>Select specialist:</label>
+            <select
+              className="browser-default"
+              defaultValue="all"
+              name="selectedSpecialist"
+              onChange={this.handleSetState}
+            >
+              <option value="all">All specialists</option>
+              {this.state.specialists.map(s => (
+                <option key={s._id} value={s.name}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div className="row section">
           <div className="col s6">
@@ -88,9 +110,9 @@ class Book extends Component {
               selected={this.state.fromDate}
               onChange={fromDate => this.setState({ fromDate })}
               showTimeSelect
-              timeFormat="HH:mm"
               timeIntervals={20}
-              dateFormat="MMMM d, yyyy h:mm aa"
+              dateFormat="dd/MM/yyyy – HH:mm"
+              timeFormat="HH:mm"
               timeCaption="time"
             />
           </div>
@@ -102,14 +124,14 @@ class Book extends Component {
               selected={this.state.toDate}
               onChange={toDate => this.setState({ toDate })}
               showTimeSelect
-              timeFormat="HH:mm"
               timeIntervals={20}
-              dateFormat="MMMM d, yyyy h:mm aa"
+              dateFormat="dd/MM/yyyy – HH:mm"
+              timeFormat="HH:mm"
               timeCaption="time"
             />
           </div>
-          <div className="col">
-            <button className="btn right" onClick={this.handleAppointmentQuery}>
+          <div className="col s12">
+            <button className="btn right yellow darken-4" onClick={this.handleAppointmentQuery}>
               Search
             </button>
           </div>
@@ -119,14 +141,25 @@ class Book extends Component {
         <div
           style={this.state.appointments.length === 0 ? { display: "none" } : { display: "block" }}
         >
-          <table>
+          <div className="col s12">
+            <div className="input-field col s12 m6">
+              <input
+                type="text"
+                id="visitor-name"
+                name="visitorName"
+                onChange={this.handleSetState}
+              />
+              <label htmlFor="visitor-name">Visitor name</label>
+            </div>
+          </div>
+          <table className="centered">
             <thead>
               <tr>
                 <th>Specialist</th>
                 <th>Date</th>
                 <th>From</th>
                 <th>To</th>
-                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -136,8 +169,15 @@ class Book extends Component {
                   <td>{dateFormat(new Date(a.startTime), "dd/mm/yyyy")}</td>
                   <td>{dateFormat(new Date(a.startTime), "HH:MM")}</td>
                   <td>{dateFormat(new Date(a.endTime), "HH:MM")}</td>
-                  <td>{a.status}</td>
-                  {/* <td>{a.status}</td> */}
+                  <td>
+                    <button
+                      className="btn green darken-3"
+                      value={a}
+                      onClick={() => this.handleBooking(a)}
+                    >
+                      Book
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

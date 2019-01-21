@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import M from "materialize-css";
 import axios from "axios";
+import dateFormat from "dateformat";
 import keys from "../keys";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -10,9 +11,8 @@ class CreateAppointment extends Component {
     specialists: [],
     appointmentsToAdd: [],
     selectedSpecialist: null,
-    visitorName: "",
     notes: null,
-    fromDate: null,
+    fromDate: new Date(),
     toDate: null
   };
 
@@ -36,7 +36,7 @@ class CreateAppointment extends Component {
   handleQuery = () => {
     const { selectedSpecialist, fromDate, toDate } = this.state;
     if (selectedSpecialist === null || fromDate === null || toDate === null) {
-      M.toast({ html: "Please select specialist, vistor name, start and end times" });
+      M.toast({ html: "Please select specialist, start and end times" });
     } else {
       const query = `?specialist=${selectedSpecialist}&from=${fromDate.getTime()}&to=${toDate.getTime()}`;
       this.checkAvailability(query);
@@ -46,32 +46,39 @@ class CreateAppointment extends Component {
   checkAvailability = q => {
     axios.get(keys.serverAddress + `/api/v1/appointment/available${q}`).then(r => {
       console.log(r.data);
-      if (r.data.length === 0) {
+      if (r.data.reserved.length === 0) {
         const newAppointment = {
           specialistName: this.state.selectedSpecialist,
-          visitorName: this.state.visitorName,
           startTime: this.state.fromDate.getTime(),
           endTime: this.state.toDate.getTime(),
           notes: this.state.notes
         };
         const newArray = [...this.state.appointmentsToAdd, newAppointment];
         this.setState({ appointmentsToAdd: newArray });
+      } else {
+        M.toast({ html: r.data.message });
       }
     });
   };
 
   handleCreateAppointments = () => {
-    axios.post(keys.serverAddress + "/api/v1/timeslots", {
-      appointments: this.state.appointmentsToAdd
-    });
+    axios
+      .post(keys.serverAddress + "/api/v1/timeslots", {
+        appointments: this.state.appointmentsToAdd
+      })
+      .then(r => {
+        console.log(r.data);
+        M.toast({ html: r.data.message });
+        this.setState({ appointmentsToAdd: [] });
+      });
   };
 
   render() {
     return (
       <>
         <div className="row">
-          <h3>Create appointment</h3>
-          <div className="col s12 m6">
+          <h3 className="col">Create appointment</h3>
+          <div className="col s12">
             <label>Select specialist:</label>
             <select
               className="browser-default"
@@ -89,41 +96,32 @@ class CreateAppointment extends Component {
               ))}
             </select>
           </div>
-          <div className="input-field col s12 m6">
-            <input
-              type="text"
-              id="visitor-name"
-              name="visitorName"
-              onChange={this.handleSetState}
-            />
-            <label htmlFor="visitor-name">Visitor name</label>
-          </div>
         </div>
 
         <div className="row">
           <div className="col s12 m6">
             <DatePicker
-              minDate={new Date()}
+              minDate={this.state.fromDate}
               placeholderText="Start time"
               selected={this.state.fromDate}
               onChange={fromDate => this.setState({ fromDate })}
               showTimeSelect
               timeFormat="HH:mm"
-              timeIntervals={15}
-              dateFormat="MMMM d, yyyy h:mm aa"
+              timeIntervals={20}
+              dateFormat="dd/MM/yyyy – HH:mm"
               timeCaption="time"
             />
           </div>
           <div className="col s12 m6">
             <DatePicker
-              minDate={new Date()}
+              minDate={this.state.fromDate}
               placeholderText="End time"
               selected={this.state.toDate}
               onChange={toDate => this.setState({ toDate })}
               showTimeSelect
               timeFormat="HH:mm"
-              timeIntervals={15}
-              dateFormat="MMMM d, yyyy h:mm aa"
+              timeIntervals={20}
+              dateFormat="dd/MM/yyyy – HH:mm"
               timeCaption="time"
             />
           </div>
@@ -146,6 +144,7 @@ class CreateAppointment extends Component {
               <thead>
                 <tr>
                   <th>Specialist</th>
+                  <th>Date</th>
                   <th>From</th>
                   <th>To</th>
                   <th>Notes</th>
@@ -155,14 +154,15 @@ class CreateAppointment extends Component {
                 {this.state.appointmentsToAdd.map((a, index) => (
                   <tr key={index}>
                     <td>{a.specialistName}</td>
-                    <td>{a.startTime}</td>
-                    <td>{a.endTime}</td>
+                    <td>{dateFormat(new Date(a.startTime), "dd/mm/yyyy")}</td>
+                    <td>{dateFormat(new Date(a.startTime), "HH:MM")}</td>
+                    <td>{dateFormat(new Date(a.endTime), "HH:MM")}</td>
                     <td>{a.notes}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div className="col s12 section">
+            <div className="s12 section">
               <button className="btn right green darken-3" onClick={this.handleCreateAppointments}>
                 Create
               </button>

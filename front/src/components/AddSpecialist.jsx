@@ -6,8 +6,21 @@ import keys from "../keys";
 class AddSpecialist extends Component {
   state = {
     specialistName: "",
-    specialistRole: ""
+    specialistRole: "",
+    allSpecialists: []
   };
+
+  componentDidMount() {
+    this.getSpecialists();
+  }
+
+  getSpecialists = () => {
+    axios.get(keys.serverAddress + "/api/v1/specialist-load-all").then(r => {
+      this.setState({ allSpecialists: r.data });
+      console.log("Book appointment – Specialists loaded");
+    });
+  };
+
   handleSpecialistInfo = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -31,6 +44,8 @@ class AddSpecialist extends Component {
           specialistName: "",
           specialistRole: ""
         });
+      }).then(() => {
+        this.getSpecialists();
       });
   };
 
@@ -71,6 +86,28 @@ class AddSpecialist extends Component {
               </button>
             </div>
           </div>
+          <h3>All specialists</h3>
+          <div className="col s12">
+            <button className="btn green darken-4" onClick={this.getAllAppointments}>
+              <i className="material-icons">refresh</i>
+            </button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Specialist</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.allSpecialists.map(d => (
+                <tr key={d._id}>
+                  <td>{d.name}</td>
+                  <td>{d.role}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </>
     );
